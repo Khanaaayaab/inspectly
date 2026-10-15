@@ -1,0 +1,26 @@
+EMAIL NOTIFICATIONS: 3 setups, about 10 minutes
+
+A) Email for every form request (before payment)   [Netlify Forms, no extra account]
+   1. Deploy the site. Netlify finds the form "report-request" by itself.
+   2. Netlify > your site > Project configuration > Notifications > Emails and webhooks
+      > Add notification > Email notification > Form submission.
+   3. Choose the form "report-request" and type your email. Save.
+   Every submission also appears in Netlify > Forms (free plan: 100 per month).
+
+B) Email after a PAID order   [Stripe webhook + Resend]
+   1. resend.com: create a free account and an API key.
+   2. Stripe > Developers > Webhooks > Add endpoint:
+        https://YOUR-SITE.netlify.app/.netlify/functions/stripe-webhook
+      Event: checkout.session.completed. Copy its signing secret (whsec_...).
+   3. Netlify > Site configuration > Environment variables, add:
+        STRIPE_WEBHOOK_SECRET = whsec_...
+        RESEND_API_KEY        = re_...
+        NOTIFY_EMAIL          = the email you signed up to Resend with
+   4. Redeploy the site, then pay once with the test card 4242 4242 4242 4242.
+
+   Resend's test sender (onboarding@resend.dev) only delivers to the email you used to
+   sign up to Resend, which is fine for notifications to yourself. To send from your own
+   address, verify a domain in Resend and add FROM_EMAIL = "Inspectly <hello@yourdomain.com>".
+
+Notes: keep keys only in Netlify environment variables, never in the code. Client details
+(VIN, name, email, phone) are personal data: mention this in your Privacy policy.
